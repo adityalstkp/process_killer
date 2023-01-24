@@ -1,10 +1,6 @@
 [
     {
-        "name": "docker",
-        "expired": "1h"
-    },
-    {
         "name": "htop",
-        "expired": "1h"
+        "expired": "30s"
     }
 ]
