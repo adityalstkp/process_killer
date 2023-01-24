@@ -1,13 +1,16 @@
 use std::{fs, time::{SystemTime, UNIX_EPOCH}};
 use clap::Parser;
 use process_killer::procs_cfg::{parse_config, ProcsConfig};
-use sysinfo::{System, SystemExt, ProcessExt};
+use sysinfo::{System, SystemExt, ProcessExt, Signal};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
 struct AppArgs {
     #[arg(short, long)]
-    config_path: std::path::PathBuf
+    config_path: std::path::PathBuf,
+
+    #[arg(short, long, default_value_t = 5000)]
+    refresh_time: u16,
 }
 
 // Register procs killer by procs name
@@ -21,10 +24,9 @@ fn reg_procs_killer(sys: &mut System, procs_cfg: &ProcsConfig) {
 
         println!("name: {} | pid: {} | delta: {}s", procs.name(), procs.pid(), d_start_time);
 
-        if let Some(s) = procs_cfg.expired_seconds {
-            if d_start_time >= s {
-                println!("above procs is gonna be killed!");
-            }
+        if d_start_time >= procs_cfg.expired_seconds {
+            procs.kill_with(Signal::Quit).unwrap_or(false); 
+            println!("procs with pid: {} is gonna be killed!", procs.pid());
         }
     }
 }
@@ -42,6 +44,6 @@ fn main() {
         for cfg in procs_cfg.iter() {
             reg_procs_killer(&mut sys, &cfg);
         }
-        std::thread::sleep(std::time::Duration::from_millis(5000))
+        std::thread::sleep(std::time::Duration::from_millis(args.refresh_time.into()))
     }
 }

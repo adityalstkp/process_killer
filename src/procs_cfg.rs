@@ -8,7 +8,8 @@ pub struct ProcsConfig {
     pub name: String,
     pub expired: String,
 
-    pub expired_seconds: Option<u64>,
+    #[serde(default)]
+    pub expired_seconds: u64,
 }
 
 #[derive(Debug)]
@@ -22,7 +23,6 @@ impl fmt::Display for ConfigError {
 
 impl Error for ConfigError {}
 
-
 impl ProcsConfig {
     pub fn parse_expired_unit(&mut self) -> Result<(), ConfigError> {
        let match_unit = self.expired.chars().last();
@@ -30,13 +30,13 @@ impl ProcsConfig {
        let n: u64 = self.expired[..last_idx - 1].parse().unwrap();
        if let Some(u) = match_unit {
            if u == 'h' {
-               self.expired_seconds = Some(n * 3600);
+               self.expired_seconds = n * 3600;
                return Ok(())
            } else if u == 'm' {
-               self.expired_seconds = Some(n * 60);
+               self.expired_seconds = n * 60;
                return Ok(())
            } else if u == 's' {
-               self.expired_seconds = Some(n);
+               self.expired_seconds = n;
                return Ok(())
            }
        }

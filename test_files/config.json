@@ -1,6 +1,6 @@
 [
     {
         "name": "htop",
-        "expired": "30s"
+        "expired": "10s"
     }
 ]
