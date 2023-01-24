@@ -1,7 +1,7 @@
 use std::{fs, time::{SystemTime, UNIX_EPOCH}};
 use clap::Parser;
 use process_killer::procs_cfg::{parse_config, ProcsConfig};
-use sysinfo::{System, SystemExt, ProcessExt};
+use sysinfo::{System, SystemExt, ProcessExt, Signal};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -23,6 +23,7 @@ fn reg_procs_killer(sys: &mut System, procs_cfg: &ProcsConfig) {
 
         if let Some(s) = procs_cfg.expired_seconds {
             if d_start_time >= s {
+                procs.kill_with(Signal::Quit).unwrap_or(false); 
                 println!("above procs is gonna be killed!");
             }
         }
