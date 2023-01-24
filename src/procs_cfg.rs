@@ -8,11 +8,11 @@ pub struct ProcsConfig {
     pub name: String,
     pub expired: String,
 
-    pub expired_seconds: Option<i64>,
+    pub expired_seconds: Option<u64>,
 }
 
 #[derive(Debug)]
-struct ConfigError(String);
+pub struct ConfigError(String);
 
 impl fmt::Display for ConfigError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -24,10 +24,10 @@ impl Error for ConfigError {}
 
 
 impl ProcsConfig {
-    pub fn parse_expired_unit(&mut self) -> Result<(), Box<dyn Error>> {
+    pub fn parse_expired_unit(&mut self) -> Result<(), ConfigError> {
        let match_unit = self.expired.chars().last();
        let last_idx = self.expired.len();
-       let n: i64 = self.expired[..last_idx].parse().unwrap();
+       let n: u64 = self.expired[..last_idx - 1].parse().unwrap();
        if let Some(u) = match_unit {
            if u == 'h' {
                self.expired_seconds = Some(n * 3600);
@@ -41,7 +41,7 @@ impl ProcsConfig {
            }
        }
 
-       Err(Box::new(ConfigError("not recognizeable unit".into())))
+       Err(ConfigError("not recognizeable unit".into()))
     }
 }
 

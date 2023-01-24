@@ -1,6 +1,6 @@
-use std::fs;
+use std::{fs, time::{SystemTime, UNIX_EPOCH}};
 use clap::Parser;
-use process_killer::{procs_cfg::{parse_config, ProcsConfig}};
+use process_killer::procs_cfg::{parse_config, ProcsConfig};
 use sysinfo::{System, SystemExt, ProcessExt};
 
 #[derive(Parser)]
@@ -13,7 +13,20 @@ struct AppArgs {
 // Register procs killer by procs name
 fn reg_procs_killer(sys: &mut System, procs_cfg: &ProcsConfig) {
     for procs in sys.processes_by_exact_name(&procs_cfg.name) {
-        println!("name: {} | pid: {}", procs.name(), procs.pid())
+        let now = SystemTime::now();
+        let d = now.duration_since(UNIX_EPOCH).expect("time went backwards");
+
+        let ds = d.as_secs();
+        let d_start_time = ds - procs.start_time();
+
+        println!("name: {} | pid: {} | delta: {}s", procs.name(), procs.pid(), d_start_time);
+
+        if let Some(s) = procs_cfg.expired_seconds {
+            if d_start_time >= s {
+                println!("above procs is gonna be killed!");
+            }
+
+        }
     }
 }
 
