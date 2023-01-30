@@ -5,12 +5,13 @@ Process killer based on config JSON file.
 
 ## Usage
 ```bash
-Usage: process_killer [OPTIONS] --config-path <CONFIG_PATH>
-
-Options:
-  -c, --config-path <CONFIG_PATH>
-  -r, --refresh-time <REFRESH_TIME>  [default: 5000]
-  -h, --help                         Print help
+Usage: process_killer [OPTIONS] --config-path <CONFIG_PATH>                              
+                                                                                         
+Options:                                                                                 
+  -c, --config-path <CONFIG_PATH>                                                        
+  -r, --refresh-time <REFRESH_TIME>  [default: 5000]                                     
+  -d, --dry-run                                                                          
+  -h, --help                         Print help                                          
   -V, --version                      Print version
 ```
 
@@ -41,3 +42,4 @@ procs with pid: 11603 is gonna be killed!
 - [x] Parse expired with `h`, `m`, and `s` unit.
 - [x] Parse args when running binary.
 - [x] Kill procs when expired
+- [ ] Detect zombie ??
